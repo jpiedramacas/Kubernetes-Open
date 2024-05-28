@@ -9,54 +9,11 @@ Este documento describe los pasos necesarios para desplegar Nginx en un clúster
 
 ## Pasos
 
-### 1. Crear el archivo de Deployment
+### 1. Archivos de configuracion Nginx
 
-Crea un archivo llamado `nginx-deployment.yaml` con el siguiente contenido:
+Debemos tener dos archivos de configuracion  `nginx-deployment.yaml` y `nginx-service.yaml`
 
-```yaml
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: nginx-deploy
-  labels:
-    app: nginx
-spec:
-  replicas: 3
-  selector:
-    matchLabels:
-      app: nginx
-  template:
-    metadata:
-      labels:
-        app: nginx
-    spec:
-      containers:
-      - name: nginx
-        image: public.ecr.aws/nginx/nginx:stable-perl
-        ports:
-        - containerPort: 80
-```
-
-### 2. Crear el archivo de Service
-
-Crea un archivo llamado `nginx-service.yaml` con el siguiente contenido:
-
-```yaml
-apiVersion: v1
-kind: Service
-metadata:
-  name: nginx-service
-spec:
-  selector:
-    app: nginx
-  ports:
-    - protocol: TCP
-      port: 80
-      targetPort: 80
-  type: LoadBalancer
-```
-
-### 3. Desplegar los archivos en Kubernetes
+### 2. Desplegar los archivos en Kubernetes
 
 Para desplegar los archivos, utiliza los siguientes comandos:
 
@@ -65,7 +22,7 @@ kubectl apply -f nginx-deployment.yaml
 kubectl apply -f nginx-service.yaml
 ```
 
-### 4. Verificar el estado del Deployment y el Service
+### 3. Verificar el estado del Deployment y el Service
 
 Verifica que el Deployment y el Service se hayan creado correctamente y estén funcionando.
 
@@ -98,7 +55,7 @@ nginx-service   LoadBalancer   10.97.234.51    <pending>     80:31357/TCP   2m
 
 Si el `EXTERNAL-IP` del `nginx-service` aparece como `<pending>`, sigue los pasos adicionales para configurar el balanceador de carga en tu entorno (como se describe en la sección de solución de problemas).
 
-### 5. Comprobar que el servidor web funciona correctamente
+### 4. Comprobar que el servidor web funciona correctamente
 
 Una vez que el `EXTERNAL-IP` esté disponible, abre un navegador web y navega a la dirección `http://<EXTERNAL-IP>:80`. Deberías ver la página de bienvenida de Nginx.
 
