@@ -162,7 +162,7 @@ Puedes editar el contenido del volumen persistente montado en el pod. Por ejempl
     echo "Hola mundo" > index.html
     ```
 
-4. Editamos `index.html` usando nano :
+4. Editamos `index.html` usando `nano` :
 
    ```bash
     apt-get update && apt-get install nano 
