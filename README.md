@@ -143,7 +143,7 @@ Para verificar que los cambios se han aplicado correctamente, abre un navegador 
 Si estás utilizando Minikube, puedes acceder al servicio utilizando el comando `minikube service`:
 
 ```bash
-minikube service webapp
+minikube service webapp-service
 ```
 
 ## Solución de Problemas
