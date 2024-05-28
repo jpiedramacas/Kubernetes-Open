@@ -1,6 +1,6 @@
 # Desplegar una Aplicación Web con un Volumen Persistente en Kubernetes
 
-Este documento proporciona una guía detallada sobre cómo montar un volumen persistente en un pod de Kubernetes mediante la definición de un PersistentVolumeClaim (PVC) y su asociación con un Deployment. 
+Este documento proporciona una guía detallada sobre cómo montar un volumen persistente en un pod de Kubernetes mediante la definición de un PersistentVolumeClaim (PVC) y su asociación con un Deployment.
 
 ## Archivos de Configuración
 
@@ -110,20 +110,40 @@ webapp-<random-string>    1/1     Running   0          2m
 webapp-<random-string>    1/1     Running   0          2m
 ```
 
-### 4. Acceder a los Logs de los Pods
+### 4. Editar el Contenido del Volumen
 
-Para ver los logs de un pod específico:
+Puedes editar el contenido del volumen persistente montado en el pod. Por ejemplo, para editar el archivo `index.html`:
+
+1. Ejecuta un comando `exec` para acceder al pod:
+
+    ```bash
+    kubectl exec -it <pod-name> -- bash
+    ```
+
+    Reemplaza `<pod-name>` con el nombre de uno de tus pods (por ejemplo, `webapp-<random-string>`).
+
+2. Navega al directorio donde está montado el volumen:
+
+    ```bash
+    cd /usr/share/nginx/html
+    ```
+
+3. Crea o edita el archivo `index.html`:
+
+    Si `nano` no está disponible, puedes usar `echo` para crear un archivo rápidamente:
+
+    ```bash
+    echo "Hola mundo" > index.html
+    ```
+
+### 5. Verificar el Contenido Editado
+
+Para verificar que los cambios se han aplicado correctamente, abre un navegador web y navega a la dirección `http://<EXTERNAL-IP>:80`. Deberías ver el contenido `Hola mundo`.
+
+Si estás utilizando Minikube, puedes acceder al servicio utilizando el comando `minikube service`:
 
 ```bash
-kubectl logs <pod-name>
-```
-
-### 5. Ver Detalles del Deployment
-
-Para ver los detalles de un deployment específico:
-
-```bash
-kubectl describe deployment webapp
+minikube service webapp
 ```
 
 ## Solución de Problemas
@@ -146,6 +166,4 @@ kubectl describe pod <pod-name>
 
 ## Conclusión
 
-Siguiendo estos pasos, has configurado y desplegado una aplicación web (usando Nginx) en un clúster de Kubernetes con un volumen persistente montado. Esto garantiza que los datos en el directorio `/usr/share/nginx/html` persistan incluso si los pods se eliminan y recrean.
-
-Estos comandos y configuraciones proporcionan una base sólida para el manejo de volúmenes persistentes y despliegues en Kubernetes.
+Siguiendo estos pasos, has configurado y desplegado una aplicación web (usando Nginx) en un clúster de Kubernetes con un volumen persistente montado. Esto garantiza que los datos en el directorio `/usr/share/nginx/html` persistan incluso si los pods se eliminan y recrean. También has aprendido cómo editar el contenido del volumen persistente directamente desde un pod.
