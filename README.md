@@ -162,6 +162,68 @@ Puedes editar el contenido del volumen persistente montado en el pod. Por ejempl
     echo "Hola mundo" > index.html
     ```
 
+4. Editamos `index.html` usando nano :
+
+   ```bash
+    apt-get update && apt-get install nano 
+    ```
+
+5. Index.html
+    ```bash
+    <!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Presentación Profesional</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            text-align: center;
+        }
+        h1 {
+            color: #007bff;
+        }
+        p {
+            font-size: 18px;
+        }
+        .button {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+        .button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Bienvenido a Nuestra Página Web</h1>
+        <p>Somos una empresa dedicada a ofrecer soluciones innovadoras para nuestros clientes.</p>
+        <p>¡Contáctanos para conocer más sobre nuestros servicios!</p>
+        <a href="mailto:info@tudominio.com" class="button">Contactar</a>
+    </div>
+
+</body>
+</html>
+
+    ```
+
 ### 6. Verificar el Contenido Editado
 
 Para verificar que los cambios se han aplicado correctamente, abre un navegador web y navega a la dirección `http://<EXTERNAL-IP>:80`. Deberías ver el contenido `Hola mundo`.
