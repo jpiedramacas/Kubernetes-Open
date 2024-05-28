@@ -1,75 +1,94 @@
-# Desplegar Nginx en Kubernetes
 
-Este documento describe los pasos necesarios para desplegar Nginx en un clúster de Kubernetes utilizando un Deployment y un Service. A continuación, se proporcionan los comandos y archivos necesarios.
+### 1. Archivo de Deployment
 
-## Prerrequisitos
+Crea un archivo llamado `httpd-deployment.yaml` con el siguiente contenido:
 
-- Kubernetes instalado y configurado.
-- `kubectl` configurado para interactuar con tu clúster de Kubernetes.
-
-## Pasos
-
-### 1. Archivos de configuracion Nginx
-
-Debemos tener dos archivos de configuracion  `nginx-deployment.yaml` y `nginx-service.yaml`
-
-### 2. Desplegar los archivos en Kubernetes
-
-Para desplegar los archivos, utiliza los siguientes comandos:
-
-```bash
-kubectl apply -f nginx-deployment.yaml
-kubectl apply -f nginx-service.yaml
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: httpd-deploy
+  labels:
+    app: httpd
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: httpd
+  template:
+    metadata:
+      labels:
+        app: httpd
+    spec:
+      containers:
+      - name: httpd
+        image: httpd:latest
+        ports:
+        - containerPort: 80
 ```
 
-### 3. Verificar el estado del Deployment y el Service
+### 2. Archivo de Service
 
-Verifica que el Deployment y el Service se hayan creado correctamente y estén funcionando.
+Crea un archivo llamado `httpd-service.yaml` con el siguiente contenido:
 
-#### Verificar el Deployment
-
-```bash
-kubectl get deployments
+```yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: httpd-service
+spec:
+  selector:
+    app: httpd
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+  type: LoadBalancer
 ```
 
-Deberías ver una salida similar a:
+### Pasos para Desplegar los Archivos en Kubernetes
 
-```
-NAME           READY   UP-TO-DATE   AVAILABLE   AGE
-nginx-deploy   3/3     3            3           1m
-```
+1. **Aplicar el Deployment**:
 
-#### Verificar el Service
+    ```bash
+    kubectl apply -f httpd-deployment.yaml
+    ```
 
-```bash
-kubectl get services
-```
+2. **Aplicar el Service**:
 
-Deberías ver una salida similar a:
+    ```bash
+    kubectl apply -f httpd-service.yaml
+    ```
 
-```
-NAME            TYPE           CLUSTER-IP      EXTERNAL-IP   PORT(S)        AGE
-kubernetes      ClusterIP      10.96.0.1       <none>        443/TCP        10m
-nginx-service   LoadBalancer   10.97.234.51    <pending>     80:31357/TCP   2m
-```
+3. **Verificar el Estado del Deployment y el Service**:
 
-Si el `EXTERNAL-IP` del `nginx-service` aparece como `<pending>`, sigue los pasos adicionales para configurar el balanceador de carga en tu entorno (como se describe en la sección de solución de problemas).
+    - Verifica el Deployment:
 
-### 4. Comprobar que el servidor web funciona correctamente
+        ```bash
+        kubectl get deployments
+        ```
 
-Una vez que el `EXTERNAL-IP` esté disponible, abre un navegador web y navega a la dirección `http://<EXTERNAL-IP>:80`. Deberías ver la página de bienvenida de Nginx.
+    - Verifica el Service:
 
-Si estás utilizando Minikube, puedes acceder al servicio utilizando el comando `minikube service`:
+        ```bash
+        kubectl get services
+        ```
 
-```bash
-minikube service nginx-service
-```
+    Si el `EXTERNAL-IP` del `httpd-service` aparece como `<pending>`, sigue los pasos adicionales para configurar el balanceador de carga en tu entorno (como se describe en la sección de solución de problemas en la respuesta anterior).
 
-Esto abrirá el navegador con la URL correcta para acceder a Nginx.
+4. **Acceder al Servidor Web**:
 
-## Solución de Problemas
+    Una vez que el `EXTERNAL-IP` esté disponible, abre un navegador web y navega a la dirección `http://<EXTERNAL-IP>:80`. Deberías ver la página de bienvenida de Apache HTTPD.
 
-- **EXTERNAL-IP pendiente**: Si el `EXTERNAL-IP` del `nginx-service` permanece como `<pending>`, asegúrate de que tu entorno Kubernetes soporta servicios de tipo `LoadBalancer`. Si estás utilizando Minikube, ejecuta `minikube tunnel` para asignar una IP externa.
+    Si estás utilizando Minikube, puedes acceder al servicio utilizando el comando `minikube service`:
+
+    ```bash
+    minikube service httpd-service
+    ```
+
+### Notas Adicionales
+
+- **EXTERNAL-IP pendiente**: Si el `EXTERNAL-IP` del `httpd-service` permanece como `<pending>`, asegúrate de que tu entorno Kubernetes soporta servicios de tipo `LoadBalancer`. Si estás utilizando Minikube, ejecuta `minikube tunnel` para asignar una IP externa.
 - **Acceso usando NodePort**: Como alternativa, puedes modificar el tipo de servicio a `NodePort` para acceder a la aplicación a través de la IP del nodo y un puerto específico.
 
-Guarda estos archivos y sigue los comandos para desplegar y verificar tu servidor Nginx en Kubernetes.
+Guarda estos archivos y sigue los comandos para desplegar y verificar tu servidor Apache HTTPD en Kubernetes.
