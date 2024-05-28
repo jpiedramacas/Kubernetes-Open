@@ -22,7 +22,7 @@ spec:
     spec:
       containers:
       - name: httpd
-        image: httpd:latest
+        image: public.ecr.aws/ubuntu/apache2:2.4-20.04_beta
         ports:
         - containerPort: 80
 ```
