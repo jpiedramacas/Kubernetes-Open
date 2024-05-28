@@ -52,6 +52,24 @@ spec:
               name: my-volume
 ```
 
+Si el servicio `webapp-service` no está creado, crea el archivo `service.yaml` con el siguiente contenido:
+
+```yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: webapp-service
+spec:
+  selector:
+    app: webapp
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+  type: LoadBalancer
+```
+
+
 ## Desplegar los Recursos en Kubernetes
 
 Sigue estos pasos para desplegar los recursos definidos en los archivos YAML.
@@ -72,7 +90,15 @@ Ejecuta el siguiente comando para crear el Deployment en Kubernetes:
 kubectl apply -f deployment.yaml
 ```
 
-### 3. Verificar el Estado de los Recursos
+### 2. Aplicar el Service
+
+Aplica el archivo para crear el servicio:
+
+```bash
+kubectl apply -f service.yaml
+```
+
+### 4. Verificar el Estado de los Recursos
 
 #### Verificar el PersistentVolumeClaim
 
@@ -110,7 +136,7 @@ webapp-<random-string>    1/1     Running   0          2m
 webapp-<random-string>    1/1     Running   0          2m
 ```
 
-### 4. Editar el Contenido del Volumen
+### 5. Editar el Contenido del Volumen
 
 Puedes editar el contenido del volumen persistente montado en el pod. Por ejemplo, para editar el archivo `index.html`:
 
@@ -136,7 +162,7 @@ Puedes editar el contenido del volumen persistente montado en el pod. Por ejempl
     echo "Hola mundo" > index.html
     ```
 
-### 5. Verificar el Contenido Editado
+### 6. Verificar el Contenido Editado
 
 Para verificar que los cambios se han aplicado correctamente, abre un navegador web y navega a la dirección `http://<EXTERNAL-IP>:80`. Deberías ver el contenido `Hola mundo`.
 
