@@ -1,75 +1,117 @@
-# Desplegar Nginx en Kubernetes
+Aquí tienes una lista de comandos fundamentales de Kubernetes utilizando `kubectl` para revisar y administrar diferentes componentes en el clúster:
 
-Este documento describe los pasos necesarios para desplegar Nginx en un clúster de Kubernetes utilizando un Deployment y un Service. A continuación, se proporcionan los comandos y archivos necesarios.
+## Pods
+- **Listar todos los pods en todos los namespaces:**
+  ```bash
+  kubectl get pods --all-namespaces
+  ```
+- **Listar todos los pods en un namespace específico (por ejemplo, default):**
+  ```bash
+  kubectl get pods -n default
+  ```
+- **Ver los detalles de un pod específico:**
+  ```bash
+  kubectl describe pod <pod-name> -n <namespace>
+  ```
+- **Ver los logs de un pod específico:**
+  ```bash
+  kubectl logs <pod-name> -n <namespace>
+  ```
 
-## Prerrequisitos
+## Replication Controllers
+- **Listar todos los replication controllers en todos los namespaces:**
+  ```bash
+  kubectl get rc --all-namespaces
+  ```
+- **Listar todos los replication controllers en un namespace específico:**
+  ```bash
+  kubectl get rc -n default
+  ```
+- **Ver los detalles de un replication controller específico:**
+  ```bash
+  kubectl describe rc <rc-name> -n <namespace>
+  ```
 
-- Kubernetes instalado y configurado.
-- `kubectl` configurado para interactuar con tu clúster de Kubernetes.
+## Deployments
+- **Listar todos los deployments en todos los namespaces:**
+  ```bash
+  kubectl get deployments --all-namespaces
+  ```
+- **Listar todos los deployments en un namespace específico:**
+  ```bash
+  kubectl get deployments -n default
+  ```
+- **Ver los detalles de un deployment específico:**
+  ```bash
+  kubectl describe deployment <deployment-name> -n <namespace>
+  ```
+- **Ver el historial de revisiones de un deployment:**
+  ```bash
+  kubectl rollout history deployment <deployment-name> -n <namespace>
+  ```
+- **Realizar un rollback de un deployment a una revisión específica:**
+  ```bash
+  kubectl rollout undo deployment <deployment-name> --to-revision=<revision-number> -n <namespace>
+  ```
 
-## Pasos
+## Services
+- **Listar todos los servicios en todos los namespaces:**
+  ```bash
+  kubectl get services --all-namespaces
+  ```
+- **Listar todos los servicios en un namespace específico:**
+  ```bash
+  kubectl get services -n default
+  ```
+- **Ver los detalles de un servicio específico:**
+  ```bash
+  kubectl describe service <service-name> -n <namespace>
+  ```
 
-### 1. Archivos de configuracion Nginx
+## ConfigMaps
+- **Listar todos los ConfigMaps en todos los namespaces:**
+  ```bash
+  kubectl get configmaps --all-namespaces
+  ```
+- **Listar todos los ConfigMaps en un namespace específico:**
+  ```bash
+  kubectl get configmaps -n default
+  ```
+- **Ver los detalles de un ConfigMap específico:**
+  ```bash
+  kubectl describe configmap <configmap-name> -n <namespace>
+  ```
 
-Debemos tener dos archivos de configuracion  `nginx-deployment.yaml` y `nginx-service.yaml`
+## Secrets
+- **Listar todos los Secrets en todos los namespaces:**
+  ```bash
+  kubectl get secrets --all-namespaces
+  ```
+- **Listar todos los Secrets en un namespace específico:**
+  ```bash
+  kubectl get secrets -n default
+  ```
+- **Ver los detalles de un Secret específico:**
+  ```bash
+  kubectl describe secret <secret-name> -n <namespace>
+  ```
 
-### 2. Desplegar los archivos en Kubernetes
+## Namespaces
+- **Listar todos los namespaces:**
+  ```bash
+  kubectl get namespaces
+  ```
+- **Ver los detalles de un namespace específico:**
+  ```bash
+  kubectl describe namespace <namespace-name>
+  ```
+- **Crear un nuevo namespace:**
+  ```bash
+  kubectl create namespace <namespace-name>
+  ```
+- **Eliminar un namespace:**
+  ```bash
+  kubectl delete namespace <namespace-name>
+  ```
 
-Para desplegar los archivos, utiliza los siguientes comandos:
-
-```bash
-kubectl apply -f nginx-deployment.yaml
-kubectl apply -f nginx-service.yaml
-```
-
-### 3. Verificar el estado del Deployment y el Service
-
-Verifica que el Deployment y el Service se hayan creado correctamente y estén funcionando.
-
-#### Verificar el Deployment
-
-```bash
-kubectl get deployments
-```
-
-Deberías ver una salida similar a:
-
-```
-NAME           READY   UP-TO-DATE   AVAILABLE   AGE
-nginx-deploy   3/3     3            3           1m
-```
-
-#### Verificar el Service
-
-```bash
-kubectl get services
-```
-
-Deberías ver una salida similar a:
-
-```
-NAME            TYPE           CLUSTER-IP      EXTERNAL-IP   PORT(S)        AGE
-kubernetes      ClusterIP      10.96.0.1       <none>        443/TCP        10m
-nginx-service   LoadBalancer   10.97.234.51    <pending>     80:31357/TCP   2m
-```
-
-Si el `EXTERNAL-IP` del `nginx-service` aparece como `<pending>`, sigue los pasos adicionales para configurar el balanceador de carga en tu entorno (como se describe en la sección de solución de problemas).
-
-### 4. Comprobar que el servidor web funciona correctamente
-
-Una vez que el `EXTERNAL-IP` esté disponible, abre un navegador web y navega a la dirección `http://<EXTERNAL-IP>:80`. Deberías ver la página de bienvenida de Nginx.
-
-Si estás utilizando Minikube, puedes acceder al servicio utilizando el comando `minikube service`:
-
-```bash
-minikube service nginx-service
-```
-
-Esto abrirá el navegador con la URL correcta para acceder a Nginx.
-
-## Solución de Problemas
-
-- **EXTERNAL-IP pendiente**: Si el `EXTERNAL-IP` del `nginx-service` permanece como `<pending>`, asegúrate de que tu entorno Kubernetes soporta servicios de tipo `LoadBalancer`. Si estás utilizando Minikube, ejecuta `minikube tunnel` para asignar una IP externa.
-- **Acceso usando NodePort**: Como alternativa, puedes modificar el tipo de servicio a `NodePort` para acceder a la aplicación a través de la IP del nodo y un puerto específico.
-
-Guarda estos archivos y sigue los comandos para desplegar y verificar tu servidor Nginx en Kubernetes.
+Estos comandos te permiten gestionar y obtener información detallada sobre los diferentes componentes en tu clúster de Kubernetes, lo cual es esencial para la administración efectiva del clúster.
