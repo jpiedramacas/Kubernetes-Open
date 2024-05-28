@@ -169,8 +169,9 @@ Puedes editar el contenido del volumen persistente montado en el pod. Por ejempl
     ```
 
 5. Index.html
-    ```bash
-    <!DOCTYPE html>
+   
+```html
+<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -221,8 +222,8 @@ Puedes editar el contenido del volumen persistente montado en el pod. Por ejempl
 
 </body>
 </html>
+```
 
-    ```
 
 ### 6. Verificar el Contenido Editado
 
