@@ -90,7 +90,7 @@ Ejecuta el siguiente comando para crear el Deployment en Kubernetes:
 kubectl apply -f deployment.yaml
 ```
 
-### 2. Aplicar el Service
+### 3. Aplicar el Service
 
 Aplica el archivo para crear el servicio:
 
