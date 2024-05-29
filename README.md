@@ -300,7 +300,7 @@ Ejecuta el siguiente comando para eliminar tu Secret, Deployments, Services y Pe
 kubectl delete -k ./
 ```
 
-## README - Exploración de Volúmenes Persistentes en Kubernetes con Minikube
+## Exploración de Volúmenes Persistentes en Kubernetes con Minikube
 
 Proporciona los comandos y pasos necesarios para explorar y verificar los volúmenes persistentes utilizados por WordPress y MySQL en un entorno Kubernetes usando Minikube.
 
