@@ -20,11 +20,6 @@ Un PersistentVolume (PV) es un fragmento de almacenamiento en el clúster que ha
 
 ## Antes de comenzar
 
-Debes tener un clúster de Kubernetes y la herramienta de línea de comandos kubectl debe estar configurada para comunicarse con tu clúster. Se recomienda ejecutar este tutorial en un clúster con al menos dos nodos que no actúen como hosts de plano de control. Si aún no tienes un clúster, puedes crear uno utilizando Minikube o puedes utilizar alguno de estos entornos de prueba de Kubernetes:
-
-- [Killercoda](https://www.killercoda.com/k8s/)
-- [Play with Kubernetes](https://labs.play-with-k8s.com/)
-
 Para verificar la versión, introduce el comando `kubectl version`. El ejemplo mostrado en esta página funciona con kubectl 1.27 y versiones posteriores.
 
 Descarga los siguientes archivos de configuración:
@@ -53,12 +48,13 @@ Añade un generador de Secret al kustomization.yaml. Un Secret es un objeto que 
 Agrega un generador de Secret en kustomization.yaml con el siguiente comando. Deberás reemplazar YOUR_PASSWORD con la contraseña que desees utilizar.
 
 ```bash
-cat <<EOF >./kustomization.yaml
 secretGenerator:
 - name: mysql-pass
   literals:
-  - password=YOUR_PASSWORD
-EOF
+  - password=mysql1234
+resources:
+  - mysql-deployment.yaml
+  - wordpress-deployment.yaml
 ```
 
 ## Agregar configuraciones de recursos para MySQL y WordPress
@@ -71,7 +67,7 @@ El siguiente manifiesto describe un Deployment de MySQL de instancia única. El 
 apiVersion: v1
 kind: Service
 metadata:
-  name: wordpress-mysql
+  name: wordpress-mysql-service
   labels:
     app: wordpress
 spec:
@@ -80,7 +76,6 @@ spec:
   selector:
     app: wordpress
     tier: mysql
-  clusterIP: None
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -222,21 +217,16 @@ spec:
 
 ## Agregar recursos al archivo kustomization.yaml
 
-Descarga los archivos de configuración de MySQL y WordPress.
-
-```bash
-curl -LO https://k8s.io/examples/application/wordpress/mysql-deployment.yaml
-curl -LO https://k8s.io/examples/application/wordpress/wordpress-deployment.yaml
-```
-
 Agrégalos al archivo kustomization.yaml.
 
 ```bash
-cat <<EOF >>./kustomization.yaml
+secretGenerator:
+- name: mysql-pass
+  literals:
+  - password=mysql1234
 resources:
   - mysql-deployment.yaml
   - wordpress-deployment.yaml
-EOF
 ```
 
 ## Aplicar y verificar
@@ -311,7 +301,7 @@ wordpress   LoadBalancer    10.0.0.89    <pending>     80:32406/TCP   4m
 Ejecuta el siguiente comando para obtener la dirección IP del Servicio de WordPress:
 
 ```bash
-minikube service wordpress --url
+minikube service wordpress 
 ```
 
 La respuesta debería ser similar a esta:
@@ -319,16 +309,6 @@ La respuesta debería ser similar a esta:
 ```
 http://1.2.3.4:32406
 ```
-
-Copia la dirección IP y carga la página en tu navegador para ver tu sitio.
-
-Deberías ver la página de configuración de WordPress similar a la siguiente captura de pantalla.
-
-![wordpress-init](https://kubernetes.io/images/docs/tutorials/stateful-application/wordpress-init.png)
-
-**Advertencia:** No dejes tu instalación de WordPress en esta página. Si otro usuario la encuentra, puede configurar un sitio web en tu instancia y utilizarla para servir contenido malicioso.
-
-Instala WordPress creando un nombre de usuario y una contraseña, o elimina tu instancia.
 
 ## Limpieza
 
