@@ -346,7 +346,6 @@ Nota: Puedes ver una advertencia relacionada con la resolución del contexto Doc
 Una vez dentro de la instancia de Minikube, puedes listar los archivos y directorios en tu directorio home para confirmar que estás en el entorno correcto:
 
 ```bash
-ls
 ls -la
 ```
 
