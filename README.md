@@ -23,18 +23,6 @@ Descarga los siguientes archivos de configuración:
 - [mysql-deployment.yaml](https://k8s.io/examples/application/wordpress/mysql-deployment.yaml)
 - [wordpress-deployment.yaml](https://k8s.io/examples/application/wordpress/wordpress-deployment.yaml)
 
-## Crear PersistentVolumeClaims y PersistentVolumes
-
-MySQL y WordPress requieren cada uno un PersistentVolume para almacenar datos. Sus PersistentVolumeClaims se crearán en el paso de despliegue.
-
-Muchos entornos de clúster tienen un StorageClass predeterminado instalado. Cuando no se especifica un StorageClass en el PersistentVolumeClaim, se utiliza el StorageClass predeterminado del clúster.
-
-Cuando se crea un PersistentVolumeClaim, se provisiona dinámicamente un PersistentVolume en función de la configuración del StorageClass.
-
-**Advertencia:** En clústeres locales, el StorageClass predeterminado utiliza el proveedor hostPath. Los volúmenes hostPath solo son adecuados para desarrollo y pruebas. Con volúmenes hostPath, tus datos residen en /tmp en el nodo donde se planifica el Pod y no se mueven entre nodos. Si un Pod muere y se planifica en otro nodo del clúster, o si se reinicia el nodo, los datos se pierden.
-
-**Nota:** Si estás configurando un clúster que necesita utilizar el proveedor hostPath, el flag `--enable-hostpath-provisioner` debe estar activado en el componente controller-manager.
-
 ## Crear un kustomization.yaml
 
 Añade un generador de Secret al kustomization.yaml. Un Secret es un objeto que almacena datos sensibles como una contraseña o clave. Desde la versión 1.14, kubectl admite la gestión de objetos de Kubernetes utilizando un archivo kustomization. Puedes crear un Secret mediante generadores en kustomization.yaml.
