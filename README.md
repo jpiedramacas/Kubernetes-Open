@@ -45,7 +45,7 @@ Cuando se crea un PersistentVolumeClaim, se provisiona dinámicamente un Persist
 
 Añade un generador de Secret al kustomization.yaml. Un Secret es un objeto que almacena datos sensibles como una contraseña o clave. Desde la versión 1.14, kubectl admite la gestión de objetos de Kubernetes utilizando un archivo kustomization. Puedes crear un Secret mediante generadores en kustomization.yaml.
 
-Agrega un generador de Secret en kustomization.yaml con el siguiente comando. Deberás reemplazar YOUR_PASSWORD con la contraseña que desees utilizar.
+**Archivo:** `kustomization.yaml`
 
 ```bash
 secretGenerator:
