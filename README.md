@@ -4,10 +4,6 @@ Este tutorial te muestra cómo desplegar un sitio de WordPress y una base de dat
 
 Un PersistentVolume (PV) es un fragmento de almacenamiento en el clúster que ha sido provisionado manualmente por un administrador o provisionado dinámicamente por Kubernetes utilizando un StorageClass. Un PersistentVolumeClaim (PVC) es una solicitud de almacenamiento realizada por un usuario que puede ser satisfecha por un PV. Los PersistentVolumes y PersistentVolumeClaims son independientes de los ciclos de vida de los Pods y conservan los datos a través de reinicios, reprogramaciones e incluso eliminaciones de Pods.
 
-**Advertencia:** Este despliegue no es adecuado para casos de uso en producción, ya que utiliza Pods de WordPress y MySQL de instancia única. Considera utilizar el gráfico Helm de WordPress para desplegar WordPress en producción.
-
-**Nota:** Los archivos proporcionados en este tutorial utilizan API de implementación de GA y son específicos de Kubernetes versión 1.9 en adelante. Si deseas utilizar este tutorial con una versión anterior de Kubernetes, actualiza la versión de la API adecuadamente o consulta versiones anteriores de este tutorial.
-
 ## Objetivos
 
 1. Crear PersistentVolumeClaims y PersistentVolumes.
@@ -38,8 +34,6 @@ Cuando se crea un PersistentVolumeClaim, se provisiona dinámicamente un Persist
 **Advertencia:** En clústeres locales, el StorageClass predeterminado utiliza el proveedor hostPath. Los volúmenes hostPath solo son adecuados para desarrollo y pruebas. Con volúmenes hostPath, tus datos residen en /tmp en el nodo donde se planifica el Pod y no se mueven entre nodos. Si un Pod muere y se planifica en otro nodo del clúster, o si se reinicia el nodo, los datos se pierden.
 
 **Nota:** Si estás configurando un clúster que necesita utilizar el proveedor hostPath, el flag `--enable-hostpath-provisioner` debe estar activado en el componente controller-manager.
-
-**Nota:** Si tienes un clúster de Kubernetes en Google Kubernetes Engine, sigue [esta guía](https://kubernetes.io/docs/setup/release/notes/#gke).
 
 ## Crear un kustomization.yaml
 
@@ -318,6 +312,76 @@ Ejecuta el siguiente comando para eliminar tu Secret, Deployments, Services y Pe
 kubectl delete -k ./
 ```
 
-## Conclusión
+## README - Exploración de Volúmenes Persistentes en Kubernetes con Minikube
 
-Este tutorial te ha guiado a través del proceso de despliegue de un sitio de WordPress y una base de datos MySQL utilizando Kubernetes y Minikube. Has aprendido a crear PersistentVolumes y PersistentVolumeClaims, a manejar secretos sensibles y a verificar el estado de tus recursos desplegados. Para entornos de producción, considera utilizar gráficos Helm y configuraciones más robustas.
+Proporciona los comandos y pasos necesarios para explorar y verificar los volúmenes persistentes utilizados por WordPress y MySQL en un entorno Kubernetes usando Minikube.
+
+### Comandos Utilizados
+
+#### 1. Listar PersistentVolumeClaims (PVC)
+Para listar todos los PersistentVolumeClaims en el clúster:
+
+```bash
+kubectl get pvc
+```
+
+Salida esperada:
+
+```
+NAME             STATUS   VOLUME                                     CAPACITY   ACCESS MODES   STORAGECLASS   VOLUMEATTRIBUTESCLASS   AGE
+mysql-pv-claim   Bound    pvc-1134154a-3e57-40ab-9bd2-1939c6fb4a72   20Gi       RWO            standard       <unset>                 79m
+wp-pv-claim      Bound    pvc-500bb251-7b41-4fb1-8f1e-e3a747ad4caa   20Gi       RWO            standard       <unset>                 78m
+```
+
+#### 2. Acceder a Minikube a través de SSH
+Para acceder a la instancia de Minikube:
+
+```bash
+minikube ssh
+```
+
+Nota: Puedes ver una advertencia relacionada con la resolución del contexto Docker CLI, pero no afecta el acceso SSH.
+
+#### 3. Verificar la existencia de los PVC en el sistema de archivos
+Una vez dentro de la instancia de Minikube, puedes listar los archivos y directorios en tu directorio home para confirmar que estás en el entorno correcto:
+
+```bash
+ls
+ls -la
+```
+
+#### 4. Navegar a los directorios de los Pods
+Para acceder a los directorios de los pods en el sistema de archivos de Minikube, primero necesitas permisos de superusuario:
+
+```bash
+sudo su
+cd /var/lib/kubelet/pods
+```
+Esto listará los directorios correspondientes a cada pod, identificados por sus UUIDs.
+
+#### 5. Verificar los directorios de los Pods
+Para ver los detalles de los directorios de los Pods:
+
+```bash
+ls -la
+```
+
+Salida esperada:
+
+```bash
+total 44
+drwxr-x--- 11 root root 4096 May 29 15:46 .
+drwx------  9 root root 4096 May 29 15:08 ..
+drwxr-x---  5 root root 4096 May 29 15:08 063d6b9688927e601f52fd818d1305c5
+drwxr-x---  5 root root 4096 May 29 15:08 3c555f828409b009ebee39fdbedfcac0
+drwxr-x---  5 root root 4096 May 29 15:09 5d2a7ca1-e020-456c-a9c3-6a02422ef9a3
+drwxr-x---  5 root root 4096 May 29 15:08 7fd44e8d11c3e0ffe6b1825e2a1f2270
+drwxr-x---  5 root root 4096 May 29 15:09 999015e5-3033-4576-84e5-a3002c1a5d5e
+drwxr-x---  5 root root 4096 May 29 15:09 dbba026e-ffc0-4f9e-802e-649bc7afdc71
+drwxr-x---  5 root root 4096 May 29 15:46 e54dd7bd-7c2c-4a81-8c42-703ff039caa5
+drwxr-x---  5 root root 4096 May 29 15:46 f48d2937-02cb-4968-8c05-cb48713a642c
+drwxr-x---  5 root root 4096 May 29 15:08 f9c8e1d0d74b1727abdb4b4a31d3a7c1
+```
+
+### Conclusión
+Siguiendo estos pasos, puedes verificar y explorar los volúmenes persistentes asociados a tus despliegues de WordPress y MySQL en Kubernetes utilizando Minikube. Esto te permitirá asegurarte de que tus datos se almacenan de manera persistente y correcta en el clúster.
