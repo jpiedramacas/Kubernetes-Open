@@ -121,6 +121,12 @@ spec:
           claimName: mysql-pv-claim
 ```
 
+Verificamos 
+
+```bash
+kubectl apply -f .\mysql-deployment.yaml
+```
+
 El siguiente manifiesto describe un Deployment de WordPress de instancia única. El contenedor de WordPress monta el PersistentVolume en /var/www/html para los archivos de datos del sitio web. La variable de entorno WORDPRESS_DB_HOST establece el nombre del Servicio MySQL definido anteriormente, y WordPress accederá a la base de datos a través del Servicio. La variable de entorno WORDPRESS_DB_PASSWORD establece la contraseña de la base de datos desde el Secret generado por kustomize.
 
 **Archivo:** `wordpress-deployment.yaml`
@@ -195,6 +201,12 @@ spec:
       - name: wordpress-persistent-storage
         persistentVolumeClaim:
           claimName: wp-pv-claim
+```
+
+Verificamos 
+
+```bash
+kubectl apply -f .\wordpress-deployment.yaml
 ```
 
 ## Agregar recursos al archivo kustomization.yaml
