@@ -15,7 +15,7 @@ Aquí tienes la estructura revisada con los números de paso:
    - [mysql-deployment.yaml](link)
    - [wordpress-deployment.yaml](link)
 
-5. Crea un archivo kustomization.yaml e incluye un generador de Secretos utilizando el siguiente comando. Asegúrate de reemplazar YOUR_PASSWORD con la contraseña que deseas utilizar:
+5. Crea un archivo `kustomization.yaml` e incluye un generador de Secretos utilizando el siguiente comando. Asegúrate de reemplazar YOUR_PASSWORD con la contraseña que deseas utilizar:
 
     ```yaml
     secretGenerator:
