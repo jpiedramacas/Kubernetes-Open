@@ -27,14 +27,14 @@ resources:
 ## Pasos para gestionar WordPress en Kubernetes
 
 ### Aplicar configuración inicial
-Utiliza el comando `kubectl apply -k ./` para aplicar la configuración inicial y desplegar WordPress en el clúster.
+Utiliza el comando para aplicar la configuración inicial y desplegar WordPress en el clúster.
 
 ```bash
 kubectl apply -k ./
 ```
 
 ### Acceder a WordPress
-Para acceder a WordPress, ejecuta `kubectl port-forward service/wordpress 80:80` y visita `localhost` en tu navegador.
+Para acceder a WordPress, ejecuta el comando y visita `localhost` en tu navegador.
 
 ```bash
 kubectl port-forward service/wordpress 80:80
@@ -64,21 +64,21 @@ volumeMounts:
 
 
 ### Eliminar los despliegues actuales
-Usa `kubectl delete deployment --all` para eliminar los despliegues actuales y los pods.
+Usa el comando para eliminar los despliegues actuales y los pods.
 
 ```bash
 kubectl delete deployment --all
 ```
 
 ### Volver a desplegar
-Vuelve a aplicar la configuración con `kubectl apply -k ./` para desplegar WordPress con los cambios en los volúmenes persistentes.
+Vuelve a aplicar la configuración para desplegar WordPress con los cambios en los volúmenes persistentes.
 
 ```bash
 kubectl apply -k ./
 ```
 
 ### Verificar cambios
-Accede a WordPress nuevamente utilizando `kubectl port-forward service/wordpress 80:80` y verifica que los cambios realizados anteriormente estén presentes.
+Accede a WordPress nuevamente utilizando el comadno y verifica que los cambios realizados anteriormente estén presentes.
 
 ```bash
 kubectl port-forward service/wordpress 80:80
