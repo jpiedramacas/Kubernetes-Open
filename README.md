@@ -4,7 +4,7 @@ Aquí tienes la estructura revisada con los números de paso:
 
 1. Antes de comenzar, necesitas tener un clúster de Kubernetes configurado y la herramienta de línea de comandos kubectl debe estar configurada para comunicarse con tu clúster. Se recomienda ejecutar este tutorial en un clúster con al menos dos nodos que no actúen como hosts del plano de control. Si aún no tienes un clúster, puedes crear uno utilizando Minikube o puedes usar alguno de estos playgrounds de Kubernetes:
 
-2. Para verificar la versión, ingresa el comando kubectl version.
+2. Para verificar la versión, ingresa el comando 'kubectl version'
 
 3. El ejemplo mostrado en esta página funciona con kubectl versión 1.27 o superior.
 
@@ -85,6 +85,6 @@ Aquí tienes la estructura revisada con los números de paso:
     ```
 
 13. **Restaurar configuración original:**
-    Repite los pasos 10-12, pero esta vez restaura las líneas de código eliminadas en los archivos wordpress-deployment.yaml y mysql-deployment.yaml para volver a la configuración original.
+    Repite los pasos 10-12, pero esta vez restaura las líneas de código eliminadas en los archivos 'wordpress-deployment.yaml' y 'mysql-deployment.yaml' para volver a la configuración original.
 
 Al seguir estos pasos, podrás gestionar eficazmente una instancia de WordPress en un clúster de Kubernetes y realizar cambios en los volúmenes persistentes según sea necesario.
