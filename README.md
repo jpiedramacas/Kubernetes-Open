@@ -78,7 +78,7 @@ kubectl apply -k ./
 ```
 
 ### Verificar cambios
-Accede a WordPress nuevamente utilizando el comadno y verifica que los cambios realizados anteriormente estén presentes.
+Accede a WordPress nuevamente utilizando el comando y verifica que los cambios realizados anteriormente estén presentes.
 
 ```bash
 kubectl port-forward service/wordpress 80:80
