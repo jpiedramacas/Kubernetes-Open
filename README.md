@@ -4,7 +4,7 @@ Aquí tienes la estructura revisada con los números de paso:
 
 1. Antes de comenzar, necesitas tener un clúster de Kubernetes configurado y la herramienta de línea de comandos kubectl debe estar configurada para comunicarse con tu clúster. Se recomienda ejecutar este tutorial en un clúster con al menos dos nodos que no actúen como hosts del plano de control. Si aún no tienes un clúster, puedes crear uno utilizando Minikube o puedes usar alguno de estos playgrounds de Kubernetes:
 
-2. Para verificar la versión, ingresa el comando `kubectl version'`
+2. Para verificar la versión, ingresa el comando `kubectl version`
 
 3. El ejemplo mostrado en esta página funciona con kubectl versión 1.27 o superior.
 
