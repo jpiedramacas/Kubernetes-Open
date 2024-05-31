@@ -237,11 +237,9 @@ kubectl apply -k .
 3. Verifique que los recursos se han creado correctamente con los siguientes comandos:
 
 ```sh
-kubectl get svc
-kubectl get pv
-kubectl get pvc
-kubectl get deployments
 kubectl get pods
+kubectl get deployments
+kubectl get pvc
 ```
 
 ### Explicación de los Archivos YAML
