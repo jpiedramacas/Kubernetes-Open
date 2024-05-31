@@ -244,6 +244,94 @@ kubectl get deployments
 kubectl get pods
 ```
 
+### Explicación de los Archivos YAML
+
+#### persistent-volume.yaml
+
+Este archivo define un Persistent Volume (PV) en Kubernetes. Un PV es una unidad de almacenamiento que ha sido aprovisionada por un administrador. Es independiente del ciclo de vida de los pods y representa una pieza de almacenamiento en el clúster.
+
+```yaml
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-demo
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/mnt/data"
+```
+
+**Componentes del archivo:**
+
+- `apiVersion: v1`: Especifica la versión de la API de Kubernetes que se está utilizando.
+- `kind: PersistentVolume`: Indica que se está definiendo un Persistent Volume.
+- `metadata`: Información sobre el PV, como su nombre.
+  - `name: pv-demo`: Nombre del PV.
+- `spec`: Especificaciones del PV.
+  - `capacity`: Define la capacidad del volumen.
+    - `storage: 1Gi`: Establece el tamaño del volumen a 1 GiB.
+  - `accessModes`: Define cómo puede ser accedido el volumen.
+    - `ReadWriteOnce`: El volumen puede ser montado como lectura-escritura por un solo nodo a la vez.
+  - `hostPath`: Define la ruta en el host donde se almacena el volumen.
+    - `path: "/mnt/data"`: Especifica la ruta en el sistema de archivos del host.
+
+#### persistent-volume-claim.yaml
+
+Este archivo define una Persistent Volume Claim (PVC) en Kubernetes. Una PVC es una petición de almacenamiento por parte de un usuario que especifica cuánta capacidad necesita y qué modos de acceso se requieren. Kubernetes enlaza esta PVC con un PV que cumpla con las características solicitadas.
+
+```yaml
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: pvc-demo
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+```
+
+**Componentes del archivo:**
+
+- `apiVersion: v1`: Especifica la versión de la API de Kubernetes que se está utilizando.
+- `kind: PersistentVolumeClaim`: Indica que se está definiendo una Persistent Volume Claim.
+- `metadata`: Información sobre la PVC, como su nombre.
+  - `name: pvc-demo`: Nombre de la PVC.
+- `spec`: Especificaciones de la PVC.
+  - `accessModes`: Define cómo puede ser accedido el volumen solicitado.
+    - `ReadWriteOnce`: El volumen puede ser montado como lectura-escritura por un solo nodo a la vez.
+  - `resources`: Especifica los recursos solicitados.
+    - `requests`: Define las solicitudes de recursos.
+      - `storage: 1Gi`: Solicita un volumen de 1 GiB de tamaño.
+
+### ¿Cómo Afectan Estos Archivos a los Despliegues de MySQL y WordPress?
+
+Cuando se despliegan aplicaciones como MySQL y WordPress en Kubernetes, necesitan almacenamiento persistente para guardar sus datos. Esto es crucial porque los contenedores son efímeros por naturaleza, y cualquier dato almacenado solo dentro de un contenedor se perdería si el contenedor se elimina o se reinicia.
+
+#### Para MySQL:
+
+- **Persistent Volume (`task-pv-claim` en `mysql-deployment.yaml`)**:
+  - Define un volumen persistente de 5GiB en `/data/pv0001/` del host.
+- **Persistent Volume Claim (`task-pv-claim` en `mysql-deployment.yaml`)**:
+  - Reclama 3GiB del volumen persistente para que el contenedor de MySQL lo use.
+- **Deployment de MySQL**:
+  - Monta el volumen persistente en `/var/lib/mysql`, asegurando que los datos de la base de datos se almacenen de manera persistente.
+
+#### Para WordPress:
+
+- **Persistent Volume (`task-pv-claim2` en `wordpress-deployment.yaml`)**:
+  - Define un volumen persistente de 10GiB en `/data/pv0002/` del host.
+- **Persistent Volume Claim (`task-pv-claim2` en `wordpress-deployment.yaml`)**:
+  - Reclama 10GiB del volumen persistente para que el contenedor de WordPress lo use.
+- **Deployment de WordPress**:
+  - Monta el volumen persistente en `/var/www/html`, asegurando que los datos del sitio web se almacenen de manera persistente.
+
+En resumen, los archivos `persistent-volume.yaml` y `persistent-volume-claim.yaml` proporcionan la infraestructura necesaria para el almacenamiento persistente, asegurando que los datos críticos no se pierdan cuando los contenedores de MySQL y WordPress se reinicien o reprogramen.
+
 ### Conclusión
 
 Este proyecto configura y despliega un entorno de WordPress con una base de datos MySQL en un clúster de Kubernetes, utilizando volúmenes persistentes para asegurar que los datos de la base de datos y del sitio web persistan a través de ciclos de vida de los contenedores. Al usar PV y PVC, nos aseguramos de que los datos importantes no se pierdan cuando los contenedores se reinicien o reprogramen.
