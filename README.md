@@ -1,6 +1,5 @@
-Entendido. Voy a crear un README detallado en español que explique cómo funcionan `PersistentVolume` y `PersistentVolumeClaim` y cómo afectan a los despliegues de MySQL y WordPress. También explicaré el contenido y propósito de los archivos `mysql-deployment.yaml`, `wordpress-deployment.yaml`, y `kustomization.yaml`.
 
-## README
+## Introducción a Persistent Volume (PV) y Persistent Volume Claim (PVC) en Kubernetes
 
 ### Descripción General
 
