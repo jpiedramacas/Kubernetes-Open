@@ -28,6 +28,10 @@ En este proyecto, utilizamos tres archivos YAML principales:
 El archivo `kustomization.yaml` se usa para agrupar y gestionar múltiples recursos de Kubernetes de manera cohesiva. Este archivo permite definir un conjunto de recursos que pueden aplicarse conjuntamente.
 
 ```yaml
+secretGenerator:
+- name: mysql-pass
+  literals:
+  - password=mysql1234
 resources:
   - mysql-deployment.yaml
   - wordpress-deployment.yaml
