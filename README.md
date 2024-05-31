@@ -1,117 +1,246 @@
-Aquí tienes una lista de comandos fundamentales de Kubernetes utilizando `kubectl` para revisar y administrar diferentes componentes en el clúster:
+Entendido. Voy a crear un README detallado en español que explique cómo funcionan `PersistentVolume` y `PersistentVolumeClaim` y cómo afectan a los despliegues de MySQL y WordPress. También explicaré el contenido y propósito de los archivos `mysql-deployment.yaml`, `wordpress-deployment.yaml`, y `kustomization.yaml`.
 
-## Pods
-- **Listar todos los pods en todos los namespaces:**
-  ```bash
-  kubectl get pods --all-namespaces
-  ```
-- **Listar todos los pods en un namespace específico (por ejemplo, default):**
-  ```bash
-  kubectl get pods -n default
-  ```
-- **Ver los detalles de un pod específico:**
-  ```bash
-  kubectl describe pod <pod-name> -n <namespace>
-  ```
-- **Ver los logs de un pod específico:**
-  ```bash
-  kubectl logs <pod-name> -n <namespace>
-  ```
+## README
 
-## Replication Controllers
-- **Listar todos los replication controllers en todos los namespaces:**
-  ```bash
-  kubectl get rc --all-namespaces
-  ```
-- **Listar todos los replication controllers en un namespace específico:**
-  ```bash
-  kubectl get rc -n default
-  ```
-- **Ver los detalles de un replication controller específico:**
-  ```bash
-  kubectl describe rc <rc-name> -n <namespace>
-  ```
+### Descripción General
 
-## Deployments
-- **Listar todos los deployments en todos los namespaces:**
-  ```bash
-  kubectl get deployments --all-namespaces
-  ```
-- **Listar todos los deployments en un namespace específico:**
-  ```bash
-  kubectl get deployments -n default
-  ```
-- **Ver los detalles de un deployment específico:**
-  ```bash
-  kubectl describe deployment <deployment-name> -n <namespace>
-  ```
-- **Ver el historial de revisiones de un deployment:**
-  ```bash
-  kubectl rollout history deployment <deployment-name> -n <namespace>
-  ```
-- **Realizar un rollback de un deployment a una revisión específica:**
-  ```bash
-  kubectl rollout undo deployment <deployment-name> --to-revision=<revision-number> -n <namespace>
-  ```
+En Kubernetes, los volúmenes persistentes (Persistent Volumes, PV) y las reclamaciones de volúmenes persistentes (Persistent Volume Claims, PVC) son utilizados para proporcionar almacenamiento duradero a los pods. Este README explicará los conceptos de PV y PVC y detallará cómo se aplican en los despliegues de MySQL y WordPress.
 
-## Services
-- **Listar todos los servicios en todos los namespaces:**
-  ```bash
-  kubectl get services --all-namespaces
-  ```
-- **Listar todos los servicios en un namespace específico:**
-  ```bash
-  kubectl get services -n default
-  ```
-- **Ver los detalles de un servicio específico:**
-  ```bash
-  kubectl describe service <service-name> -n <namespace>
-  ```
+### ¿Qué es un Persistent Volume (PV)?
 
-## ConfigMaps
-- **Listar todos los ConfigMaps en todos los namespaces:**
-  ```bash
-  kubectl get configmaps --all-namespaces
-  ```
-- **Listar todos los ConfigMaps en un namespace específico:**
-  ```bash
-  kubectl get configmaps -n default
-  ```
-- **Ver los detalles de un ConfigMap específico:**
-  ```bash
-  kubectl describe configmap <configmap-name> -n <namespace>
-  ```
+Un **Persistent Volume (PV)** es un recurso de almacenamiento en el clúster de Kubernetes que ha sido aprovisionado por un administrador. Representa una pieza de almacenamiento físico, como un disco en un servidor o un volumen en un servicio de almacenamiento en la nube. Los PV son independientes del ciclo de vida de los pods que los usan.
 
-## Secrets
-- **Listar todos los Secrets en todos los namespaces:**
-  ```bash
-  kubectl get secrets --all-namespaces
-  ```
-- **Listar todos los Secrets en un namespace específico:**
-  ```bash
-  kubectl get secrets -n default
-  ```
-- **Ver los detalles de un Secret específico:**
-  ```bash
-  kubectl describe secret <secret-name> -n <namespace>
-  ```
+### ¿Qué es un Persistent Volume Claim (PVC)?
 
-## Namespaces
-- **Listar todos los namespaces:**
-  ```bash
-  kubectl get namespaces
-  ```
-- **Ver los detalles de un namespace específico:**
-  ```bash
-  kubectl describe namespace <namespace-name>
-  ```
-- **Crear un nuevo namespace:**
-  ```bash
-  kubectl create namespace <namespace-name>
-  ```
-- **Eliminar un namespace:**
-  ```bash
-  kubectl delete namespace <namespace-name>
-  ```
+Una **Persistent Volume Claim (PVC)** es una petición de almacenamiento por parte de un usuario. Un PVC permite que los pods soliciten almacenamiento persistente sin conocer los detalles del almacenamiento físico subyacente. Kubernetes se encarga de enlazar una PVC con un PV que cumpla con los requisitos especificados (como capacidad y modos de acceso).
 
-Estos comandos te permiten gestionar y obtener información detallada sobre los diferentes componentes en tu clúster de Kubernetes, lo cual es esencial para la administración efectiva del clúster.
+### Estructura del Proyecto
+
+En este proyecto, utilizamos tres archivos YAML principales:
+
+1. `kustomization.yaml`
+2. `mysql-deployment.yaml`
+3. `wordpress-deployment.yaml`
+
+### Descripción de los Archivos
+
+#### kustomization.yaml
+
+El archivo `kustomization.yaml` se usa para agrupar y gestionar múltiples recursos de Kubernetes de manera cohesiva. Este archivo permite definir un conjunto de recursos que pueden aplicarse conjuntamente.
+
+```yaml
+resources:
+  - mysql-deployment.yaml
+  - wordpress-deployment.yaml
+```
+
+#### mysql-deployment.yaml
+
+Este archivo define el servicio, volumen persistente, reclamación de volumen persistente y el despliegue para MySQL.
+
+```yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: wordpress-mysql
+  labels:
+    app: wordpress
+spec:
+  ports:
+    - port: 3306
+  selector:
+    app: wordpress
+    tier: mysql
+  clusterIP: None
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: task-pv-claim
+spec:
+  storageClassName: ""
+  accessModes:
+    - ReadWriteOnce
+  capacity:
+    storage: 5Gi
+  hostPath:
+    path: /data/pv0001/
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: task-pv-claim
+spec:
+  storageClassName: ""
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 3Gi
+  volumeName: task-pv-claim
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: wordpress-mysql
+  labels:
+    app: wordpress
+spec:
+  selector:
+    matchLabels:
+      app: wordpress
+      tier: mysql
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: wordpress
+        tier: mysql
+    spec:
+      containers:
+      - image: mysql:8.0
+        name: mysql
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mysql-pass
+              key: password
+        - name: MYSQL_DATABASE
+          value: wordpress
+        - name: MYSQL_USER
+          value: wordpress
+        - name: MYSQL_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mysql-pass
+              key: password
+        ports:
+        - containerPort: 3306
+          name: mysql
+        volumeMounts:
+        - name: mysql-persistent-storage
+          mountPath: /var/lib/mysql
+      volumes:
+      - name: mysql-persistent-storage
+        persistentVolumeClaim:
+          claimName: task-pv-claim
+```
+
+#### wordpress-deployment.yaml
+
+Este archivo define el servicio, volumen persistente, reclamación de volumen persistente y el despliegue para WordPress.
+
+```yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: wordpress
+  labels:
+    app: wordpress
+spec:
+  ports:
+    - port: 80
+  selector:
+    app: wordpress
+    tier: frontend
+  type: LoadBalancer
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: task-pv-claim2
+spec:
+  storageClassName: ""
+  accessModes:
+    - ReadWriteOnce
+  capacity:
+    storage: 10Gi
+  hostPath:
+    path: /data/pv0002/
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: task-pv-claim2
+  labels:
+    app: wordpress
+spec:
+  storageClassName: ""
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+  volumeName: task-pv-claim2
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: wordpress
+  labels:
+    app: wordpress
+spec:
+  selector:
+    matchLabels:
+      app: wordpress
+      tier: frontend
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: wordpress
+        tier: frontend
+    spec:
+      containers:
+      - image: wordpress:6.2.1-apache
+        name: wordpress
+        env:
+        - name: WORDPRESS_DB_HOST
+          value: wordpress-mysql
+        - name: WORDPRESS_DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mysql-pass
+              key: password
+        - name: WORDPRESS_DB_USER
+          value: wordpress
+        ports:
+        - containerPort: 80
+          name: wordpress
+        volumeMounts:
+        - name: wordpress-persistent-storage
+          mountPath: /var/www/html
+      volumes:
+      - name: wordpress-persistent-storage
+        persistentVolumeClaim:
+          claimName: task-pv-claim2
+```
+
+### Aplicación de la Configuración
+
+Para desplegar estas configuraciones en su clúster de Kubernetes, siga estos pasos:
+
+1. Asegúrese de que los archivos `kustomization.yaml`, `mysql-deployment.yaml`, y `wordpress-deployment.yaml` estén en el mismo directorio.
+
+2. Ejecute el siguiente comando para aplicar todos los recursos definidos en `kustomization.yaml`:
+
+```sh
+kubectl apply -k .
+```
+
+3. Verifique que los recursos se han creado correctamente con los siguientes comandos:
+
+```sh
+kubectl get svc
+kubectl get pv
+kubectl get pvc
+kubectl get deployments
+kubectl get pods
+```
+
+### Conclusión
+
+Este proyecto configura y despliega un entorno de WordPress con una base de datos MySQL en un clúster de Kubernetes, utilizando volúmenes persistentes para asegurar que los datos de la base de datos y del sitio web persistan a través de ciclos de vida de los contenedores. Al usar PV y PVC, nos aseguramos de que los datos importantes no se pierdan cuando los contenedores se reinicien o reprogramen.
