@@ -6,7 +6,7 @@ Este README proporciona instrucciones detalladas sobre cómo desplegar un Pod en
 ## Paso 1: Despliegue del Pod en Kubernetes
 
 1. **Creación del archivo YAML del Pod**:
-   Crea un archivo `pod.yaml` con la definición del Pod. Por ejemplo:
+   Crea un archivo `pod-definition.yaml` con la definición del Pod. Por ejemplo:
    ```yaml
    apiVersion: v1
    kind: Pod
