@@ -136,5 +136,129 @@ Este README proporciona instrucciones detalladas sobre cómo desplegar un Pod en
 2. **Acceso al sitio web**:
    Abre tu navegador web y accede a `http://localhost:80` para ver los cambios reflejados en el archivo `index.html` del contenedor.
 
-## Paso 5: 
+## Paso 5:  Crear un PersistentVolume
 
+Crea un archivo llamado `pv-volume.yaml` con el siguiente contenido:
+
+```yaml
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: my-pv-volume
+  labels:
+    type: local
+spec:
+  storageClassName: manual
+  capacity:
+    storage: 10Gi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/mnt/data"
+```
+
+Aplica el archivo de configuración para crear el PersistentVolume:
+
+```sh
+kubectl apply -f pv-volume.yaml
+```
+
+### Paso 2: Crear un PersistentVolumeClaim
+
+Crea un archivo llamado `pv-claim.yaml` con el siguiente contenido:
+
+```yaml
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: my-pv-claim
+spec:
+  storageClassName: manual
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 3Gi
+```
+
+Aplica el archivo de configuración para crear el PersistentVolumeClaim:
+
+```sh
+kubectl apply -f pv-claim.yaml
+```
+
+### Paso 3: Crear un Pod que Use el PersistentVolumeClaim
+
+Crea un archivo llamado `pod-definition.yaml` con el siguiente contenido:
+
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: my-pod
+spec:
+  volumes:
+    - name: my-pv-storage
+      persistentVolumeClaim:
+        claimName: my-pv-claim
+  containers:
+    - name: my-container
+      image: nginx:latest
+      ports:
+        - containerPort: 80
+      volumeMounts:
+        - mountPath: "/usr/share/nginx/html"
+          name: my-pv-storage
+```
+
+Aplica el archivo de configuración para crear el Pod:
+
+```sh
+kubectl apply -f pod-definition.yaml
+```
+
+### Paso 4: Verificar la Configuración
+
+Ejecuta un shell en el contenedor que está corriendo en tu Pod:
+
+```sh
+kubectl exec -it my-pod -- /bin/bash
+```
+
+Verifica que nginx está sirviendo el archivo `index.html` desde el volumen hostPath:
+
+```sh
+apt update
+apt install -y curl
+curl http://localhost/
+```
+
+### Paso 5: Limpiar
+
+Elimina el Pod, el PersistentVolumeClaim y el PersistentVolume:
+
+```sh
+kubectl delete pod my-pod
+kubectl delete pvc my-pv-claim
+kubectl delete pv my-pv-volume
+```
+
+Abre una shell en tu nodo y elimina el archivo y el directorio que creaste:
+
+```sh
+minikube ssh
+sudo rm /mnt/data/index.html
+sudo rmdir /mnt/data
+```
+
+### Paso 6: Ver los Cambios
+
+Para ver los cambios en el archivo `index.html`, redirige el puerto del Pod a tu máquina local:
+
+```sh
+kubectl port-forward my-pod 80:80
+```
+
+Ahora puedes acceder a nginx en `http://localhost:80`.
+
+¡Listo! Ahora has configurado con éxito un Pod en Kubernetes para utilizar un PersistentVolumeClaim para almacenamiento persistente.
