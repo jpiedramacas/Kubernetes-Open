@@ -255,18 +255,20 @@ Este comando muestra el estado del PersistentVolumeClaim y verifica que esté en
 
 ### 3. Instalar un editor de texto y modificar `index.html`
 
-1. Actualiza la lista de paquetes:
+1. Entrar en modo admin:
 
    ```sh
-   sudo apt-get update
+   sudo su
    ```
-
+   ```sh
+   apt-get update && apt-get upgrade 
+   ```
    Este comando actualiza la lista de paquetes disponibles en el sistema.
 
 2. Instala `nano` o `vim`:
 
    ```sh
-   sudo apt-get install nano
+   apt-get install nano
    ```
 
    Este comando instala el editor de texto `nano` en el sistema.
@@ -274,15 +276,15 @@ Este comando muestra el estado del PersistentVolumeClaim y verifica que esté en
 3. Edita el archivo `index.html`:
 
    ```sh
-   sudo nano index.html
+   nano index.html
    ```
 
-   Este comando abre el archivo `index.html` en el editor de texto `nano`.
+   Puede que haya conflicto con la terminal, que no funcione correctamente el comando 
 
 4. Modifica el contenido del archivo:
 
    ```sh
-   echo "Hola buenas XD" | sudo tee /mnt/data/index.html
+   echo "Hola buenas XD" > index.html
    ```
 
    Este comando sobrescribe el contenido del archivo `index.html` con el texto "Hola buenas XD".
@@ -299,30 +301,10 @@ Este comando redirige el puerto 80 del Pod `my-pod` al puerto 80 de tu máquina 
 
 Abre un navegador web y visita `http://localhost:80`. Deberías ver el contenido actualizado del archivo `index.html`.
 
-### 5. Limpieza
-
-Para limpiar los recursos creados, ejecuta los siguientes comandos:
-
-```sh
-kubectl delete pod my-pod
-kubectl delete pvc my-pv-claim
-kubectl delete pv my-pv-volume
-```
-
-Estos comandos eliminan el Pod, el PersistentVolumeClaim y el PersistentVolume del clúster.
-
-Si no tienes una sesión abierta en el nodo, abre una nueva y elimina el archivo y el directorio creados:
-
-```sh
-minikube ssh
-sudo rm /mnt/data/index.html
-sudo rmdir /mnt/data
-```
-
-Estos comandos eliminan el archivo `index.html` y el directorio `/mnt/data` del nodo.
-
 ## Conclusión
 
 Siguiendo estos pasos, has configurado un Pod en Kubernetes para utilizar un PersistentVolumeClaim, accedido al volumen desde el nodo, modificado el contenido del volumen y verificado los cambios a través de un navegador web. Esto proporciona una base sólida para trabajar con almacenamiento persistente en Kubernetes.
 
+## En resumen para tontos
 
+Si eliminas el pods y lo vuelves a desplegar, persiste los cambios
