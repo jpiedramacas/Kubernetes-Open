@@ -125,9 +125,6 @@ Este README proporciona instrucciones detalladas sobre cómo desplegar un Pod en
 </html>
 ```
 
-4. **Verificación de los cambios**:
-   Verifica los cambios accediendo al servicio Nginx a través de tu navegador o usando `curl`.
-
 ## Paso 4: Verificación de los cambios utilizando kubectl port-forward
 
 1. **Ejecución de kubectl port-forward**:
