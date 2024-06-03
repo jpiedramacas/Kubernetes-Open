@@ -1,117 +1,182 @@
-Aquí tienes una lista de comandos fundamentales de Kubernetes utilizando `kubectl` para revisar y administrar diferentes componentes en el clúster:
+# README: Configuración de un Pod para Utilizar un PersistentVolume para Almacenamiento
 
-## Pods
-- **Listar todos los pods en todos los namespaces:**
-  ```bash
-  kubectl get pods --all-namespaces
-  ```
-- **Listar todos los pods en un namespace específico (por ejemplo, default):**
-  ```bash
-  kubectl get pods -n default
-  ```
-- **Ver los detalles de un pod específico:**
-  ```bash
-  kubectl describe pod <pod-name> -n <namespace>
-  ```
-- **Ver los logs de un pod específico:**
-  ```bash
-  kubectl logs <pod-name> -n <namespace>
-  ```
+Este documento proporciona instrucciones paso a paso para configurar un Pod en Kubernetes que utilice un PersistentVolumeClaim para almacenamiento.
 
-## Replication Controllers
-- **Listar todos los replication controllers en todos los namespaces:**
-  ```bash
-  kubectl get rc --all-namespaces
-  ```
-- **Listar todos los replication controllers en un namespace específico:**
-  ```bash
-  kubectl get rc -n default
-  ```
-- **Ver los detalles de un replication controller específico:**
-  ```bash
-  kubectl describe rc <rc-name> -n <namespace>
-  ```
+## Introducción
 
-## Deployments
-- **Listar todos los deployments en todos los namespaces:**
-  ```bash
-  kubectl get deployments --all-namespaces
-  ```
-- **Listar todos los deployments en un namespace específico:**
-  ```bash
-  kubectl get deployments -n default
-  ```
-- **Ver los detalles de un deployment específico:**
-  ```bash
-  kubectl describe deployment <deployment-name> -n <namespace>
-  ```
-- **Ver el historial de revisiones de un deployment:**
-  ```bash
-  kubectl rollout history deployment <deployment-name> -n <namespace>
-  ```
-- **Realizar un rollback de un deployment a una revisión específica:**
-  ```bash
-  kubectl rollout undo deployment <deployment-name> --to-revision=<revision-number> -n <namespace>
-  ```
+En este tutorial, aprenderás cómo:
+1. Crear un PersistentVolume respaldado por almacenamiento físico.
+2. Crear un PersistentVolumeClaim que se vincule automáticamente a un PersistentVolume adecuado.
+3. Crear un Pod que utilice el PersistentVolumeClaim para almacenamiento.
 
-## Services
-- **Listar todos los servicios en todos los namespaces:**
-  ```bash
-  kubectl get services --all-namespaces
-  ```
-- **Listar todos los servicios en un namespace específico:**
-  ```bash
-  kubectl get services -n default
-  ```
-- **Ver los detalles de un servicio específico:**
-  ```bash
-  kubectl describe service <service-name> -n <namespace>
-  ```
+### Requisitos Previos
 
-## ConfigMaps
-- **Listar todos los ConfigMaps en todos los namespaces:**
-  ```bash
-  kubectl get configmaps --all-namespaces
-  ```
-- **Listar todos los ConfigMaps en un namespace específico:**
-  ```bash
-  kubectl get configmaps -n default
-  ```
-- **Ver los detalles de un ConfigMap específico:**
-  ```bash
-  kubectl describe configmap <configmap-name> -n <namespace>
-  ```
+- Debes tener un clúster de Kubernetes con un solo nodo y la herramienta de línea de comandos `kubectl` configurada para comunicarse con tu clúster. Si no tienes un clúster de un solo nodo, puedes crear uno usando Minikube.
+- Familiarízate con el material en [Persistent Volumes](https://kubernetes.io/docs/concepts/storage/persistent-volumes/).
 
-## Secrets
-- **Listar todos los Secrets en todos los namespaces:**
-  ```bash
-  kubectl get secrets --all-namespaces
-  ```
-- **Listar todos los Secrets en un namespace específico:**
-  ```bash
-  kubectl get secrets -n default
-  ```
-- **Ver los detalles de un Secret específico:**
-  ```bash
-  kubectl describe secret <secret-name> -n <namespace>
-  ```
+## Paso 1: Crear un archivo index.html en tu Nodo
 
-## Namespaces
-- **Listar todos los namespaces:**
-  ```bash
-  kubectl get namespaces
-  ```
-- **Ver los detalles de un namespace específico:**
-  ```bash
-  kubectl describe namespace <namespace-name>
-  ```
-- **Crear un nuevo namespace:**
-  ```bash
-  kubectl create namespace <namespace-name>
-  ```
-- **Eliminar un namespace:**
-  ```bash
-  kubectl delete namespace <namespace-name>
-  ```
+1. Abre una shell en el único nodo de tu clúster. Si estás usando Minikube, abre una shell con:
+   ```sh
+   minikube ssh
+   ```
 
-Estos comandos te permiten gestionar y obtener información detallada sobre los diferentes componentes en tu clúster de Kubernetes, lo cual es esencial para la administración efectiva del clúster.
+2. En la shell del nodo, crea un directorio `/mnt/data`:
+   ```sh
+   sudo mkdir /mnt/data
+   ```
+
+3. En el directorio `/mnt/data`, crea un archivo `index.html`:
+   ```sh
+   sudo sh -c "echo 'Hello from Kubernetes storage' > /mnt/data/index.html"
+   ```
+
+4. Verifica que el archivo `index.html` existe:
+   ```sh
+   cat /mnt/data/index.html
+   ```
+   La salida debe mostrar:
+   ```
+   Hello from Kubernetes storage
+   ```
+
+## Paso 2: Crear un PersistentVolume
+
+1. Crea un archivo de configuración `pv-volume.yaml` con el siguiente contenido:
+   ```yaml
+   apiVersion: v1
+   kind: PersistentVolume
+   metadata:
+     name: task-pv-volume
+     labels:
+       type: local
+   spec:
+     storageClassName: manual
+     capacity:
+       storage: 10Gi
+     accessModes:
+       - ReadWriteOnce
+     hostPath:
+       path: "/mnt/data"
+   ```
+
+2. Aplica el archivo de configuración para crear el PersistentVolume:
+   ```sh
+   kubectl apply -f pv-volume.yaml
+   ```
+
+3. Verifica el estado del PersistentVolume:
+   ```sh
+   kubectl get pv task-pv-volume
+   ```
+   La salida debe mostrar que el estado es `Available`:
+   ```
+   NAME             CAPACITY   ACCESSMODES   RECLAIMPOLICY   STATUS      CLAIM     STORAGECLASS   REASON    AGE
+   task-pv-volume   10Gi       RWO           Retain          Available             manual                   4s
+   ```
+
+## Paso 3: Crear un PersistentVolumeClaim
+
+1. Crea un archivo de configuración `pv-claim.yaml` con el siguiente contenido:
+   ```yaml
+   apiVersion: v1
+   kind: PersistentVolumeClaim
+   metadata:
+     name: task-pv-claim
+   spec:
+     storageClassName: manual
+     accessModes:
+       - ReadWriteOnce
+     resources:
+       requests:
+         storage: 3Gi
+   ```
+
+2. Aplica el archivo de configuración para crear el PersistentVolumeClaim:
+   ```sh
+   kubectl apply -f pv-claim.yaml
+   ```
+
+3. Verifica el estado del PersistentVolumeClaim y el PersistentVolume:
+   ```sh
+   kubectl get pv task-pv-volume
+   kubectl get pvc task-pv-claim
+   ```
+   La salida debe mostrar que ambos están en estado `Bound`:
+   ```
+   NAME             CAPACITY   ACCESSMODES   RECLAIMPOLICY   STATUS    CLAIM                   STORAGECLASS   REASON    AGE
+   task-pv-volume   10Gi       RWO           Retain          Bound     default/task-pv-claim   manual                   2m
+
+   NAME            STATUS    VOLUME           CAPACITY   ACCESSMODES   STORAGECLASS   AGE
+   task-pv-claim   Bound     task-pv-volume   10Gi       RWO           manual         30s
+   ```
+
+## Paso 4: Crear un Pod
+
+1. Crea un archivo de configuración `pv-pod.yaml` con el siguiente contenido:
+   ```yaml
+   apiVersion: v1
+   kind: Pod
+   metadata:
+     name: task-pv-pod
+   spec:
+     volumes:
+       - name: task-pv-storage
+         persistentVolumeClaim:
+           claimName: task-pv-claim
+     containers:
+       - name: task-pv-container
+         image: nginx
+         ports:
+           - containerPort: 80
+             name: "http-server"
+         volumeMounts:
+           - mountPath: "/usr/share/nginx/html"
+             name: task-pv-storage
+   ```
+
+2. Aplica el archivo de configuración para crear el Pod:
+   ```sh
+   kubectl apply -f pv-pod.yaml
+   ```
+
+3. Verifica que el contenedor en el Pod esté corriendo:
+   ```sh
+   kubectl get pod task-pv-pod
+   ```
+
+## Paso 5: Verificación de la configuración
+
+1. Ejecuta un shell en el contenedor que está corriendo en tu Pod:
+   ```sh
+   kubectl exec -it task-pv-pod -- /bin/bash
+   ```
+
+2. En tu shell, verifica que nginx está sirviendo el archivo `index.html` desde el volumen hostPath:
+   ```sh
+   apt update
+   apt install -y curl
+   curl http://localhost/
+   ```
+   La salida debe mostrar el texto que escribiste en el archivo `index.html`:
+   ```
+   Hello from Kubernetes storage
+   ```
+
+## Paso 6: Limpiar
+
+1. Elimina el Pod, el PersistentVolumeClaim y el PersistentVolume:
+   ```sh
+   kubectl delete pod task-pv-pod
+   kubectl delete pvc task-pv-claim
+   kubectl delete pv task-pv-volume
+   ```
+
+2. Abre una shell en tu nodo y elimina el archivo y el directorio que creaste:
+   ```sh
+   minikube ssh
+   sudo rm /mnt/data/index.html
+   sudo rmdir /mnt/data
+   ```
+
+¡Listo! Has configurado con éxito un Pod para utilizar almacenamiento desde un PersistentVolumeClaim en Kubernetes.
