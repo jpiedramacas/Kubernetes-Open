@@ -62,23 +62,68 @@ Este README proporciona instrucciones detalladas sobre cómo desplegar un Pod en
    ```
 
    Aquí tienes un ejemplo básico de `index.html`:
-   ```html
-   <!DOCTYPE html>
-   <html lang="en">
-   <head>
-   <meta charset="UTF-8">
-   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-   <title>Proyecto GIO-JP</title>
-   </head>
-   <body>
-   <h1>Bienvenido a Proyecto GIO-JP</h1>
-   <p>¡Gracias por visitar nuestro sitio! Somos un equipo apasionado comprometido con la excelencia y la innovación en el desarrollo de software.</p>
-   <p>Este es el comienzo de un emocionante viaje tecnológico. Estamos aquí para proporcionar soluciones creativas y eficientes para tus necesidades.</p>
-   <p>No dudes en ponerte en contacto con nosotros si necesitas ayuda o más información.</p>
-   <p><em>¡Gracias por ser parte de nuestro proyecto!</em></p>
-   </body>
-   </html>
-   ```
+   
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Proyecto GIO-JP</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #000;
+    color: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+  }
+
+  .container {
+    max-width: 800px;
+    padding: 20px;
+    text-align: center;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+  }
+
+  h1 {
+    font-size: 36px;
+    color: #007bff;
+  }
+
+  p {
+    font-size: 18px;
+    line-height: 1.6;
+  }
+
+  a {
+    color: #007bff;
+    text-decoration: none;
+  }
+
+  a:hover {
+    text-decoration: underline;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>Bienvenido a Proyecto GIO-JP</h1>
+  <p>¡Gracias por visitar nuestro sitio! Somos un equipo apasionado comprometido con la excelencia y la innovación en el desarrollo de software.</p>
+  <p>Este es el comienzo de un emocionante viaje tecnológico. Estamos aquí para proporcionar soluciones creativas y eficientes para tus necesidades.</p>
+  <p>No dudes en ponerte en contacto con nosotros si necesitas ayuda o más información.</p>
+  <p><a href="http://giogp.com/" target="_blank">Visita nuestro sitio web</a> para más detalles.</p>
+  <p><em>¡Gracias por ser parte de nuestro proyecto!</em></p>
+</div>
+</body>
+</html>
+```
 
 4. **Verificación de los cambios**:
    Verifica los cambios accediendo al servicio Nginx a través de tu navegador o usando `curl`.
