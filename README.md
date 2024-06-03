@@ -138,6 +138,12 @@ Este README proporciona instrucciones detalladas sobre cómo desplegar un Pod en
 
 ## Paso 5:  Crear un PersistentVolume
 
+Antes que todo deberas eliminar el pod que tengas desplegado
+
+   ```sh
+   kubectl delete pod my-pod
+   ```
+
 Crea un archivo llamado `pv-volume.yaml` con el siguiente contenido:
 
 ```yaml
