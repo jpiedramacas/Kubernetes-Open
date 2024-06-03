@@ -217,48 +217,6 @@ Aplica el archivo de configuración para crear el Pod:
 kubectl apply -f pod-definition.yaml
 ```
 
-### Paso 4: Verificar la Configuración
+### Se vuelve a repetir desde el PASO 2
 
-Ejecuta un shell en el contenedor que está corriendo en tu Pod:
 
-```sh
-kubectl exec -it my-pod -- /bin/bash
-```
-
-Verifica que nginx está sirviendo el archivo `index.html` desde el volumen hostPath:
-
-```sh
-apt update
-apt install -y curl
-curl http://localhost/
-```
-
-### Paso 5: Limpiar
-
-Elimina el Pod, el PersistentVolumeClaim y el PersistentVolume:
-
-```sh
-kubectl delete pod my-pod
-kubectl delete pvc my-pv-claim
-kubectl delete pv my-pv-volume
-```
-
-Abre una shell en tu nodo y elimina el archivo y el directorio que creaste:
-
-```sh
-minikube ssh
-sudo rm /mnt/data/index.html
-sudo rmdir /mnt/data
-```
-
-### Paso 6: Ver los Cambios
-
-Para ver los cambios en el archivo `index.html`, redirige el puerto del Pod a tu máquina local:
-
-```sh
-kubectl port-forward my-pod 80:80
-```
-
-Ahora puedes acceder a nginx en `http://localhost:80`.
-
-¡Listo! Ahora has configurado con éxito un Pod en Kubernetes para utilizar un PersistentVolumeClaim para almacenamiento persistente.
