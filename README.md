@@ -1,117 +1,98 @@
-Aquí tienes una lista de comandos fundamentales de Kubernetes utilizando `kubectl` para revisar y administrar diferentes componentes en el clúster:
 
-## Pods
-- **Listar todos los pods en todos los namespaces:**
-  ```bash
-  kubectl get pods --all-namespaces
-  ```
-- **Listar todos los pods en un namespace específico (por ejemplo, default):**
-  ```bash
-  kubectl get pods -n default
-  ```
-- **Ver los detalles de un pod específico:**
-  ```bash
-  kubectl describe pod <pod-name> -n <namespace>
-  ```
-- **Ver los logs de un pod específico:**
-  ```bash
-  kubectl logs <pod-name> -n <namespace>
-  ```
+# README: Despliegue y Modificación de un Pod en Kubernetes
 
-## Replication Controllers
-- **Listar todos los replication controllers en todos los namespaces:**
-  ```bash
-  kubectl get rc --all-namespaces
-  ```
-- **Listar todos los replication controllers en un namespace específico:**
-  ```bash
-  kubectl get rc -n default
-  ```
-- **Ver los detalles de un replication controller específico:**
-  ```bash
-  kubectl describe rc <rc-name> -n <namespace>
-  ```
+Este README proporciona instrucciones detalladas sobre cómo desplegar un Pod en un clúster de Kubernetes, acceder a él, modificar el archivo `index.html` y ver los cambios utilizando `kubectl port-forward`.
 
-## Deployments
-- **Listar todos los deployments en todos los namespaces:**
-  ```bash
-  kubectl get deployments --all-namespaces
-  ```
-- **Listar todos los deployments en un namespace específico:**
-  ```bash
-  kubectl get deployments -n default
-  ```
-- **Ver los detalles de un deployment específico:**
-  ```bash
-  kubectl describe deployment <deployment-name> -n <namespace>
-  ```
-- **Ver el historial de revisiones de un deployment:**
-  ```bash
-  kubectl rollout history deployment <deployment-name> -n <namespace>
-  ```
-- **Realizar un rollback de un deployment a una revisión específica:**
-  ```bash
-  kubectl rollout undo deployment <deployment-name> --to-revision=<revision-number> -n <namespace>
-  ```
+## Paso 1: Despliegue del Pod en Kubernetes
 
-## Services
-- **Listar todos los servicios en todos los namespaces:**
-  ```bash
-  kubectl get services --all-namespaces
-  ```
-- **Listar todos los servicios en un namespace específico:**
-  ```bash
-  kubectl get services -n default
-  ```
-- **Ver los detalles de un servicio específico:**
-  ```bash
-  kubectl describe service <service-name> -n <namespace>
-  ```
+1. **Creación del archivo YAML del Pod**:
+   Crea un archivo `pod.yaml` con la definición del Pod. Por ejemplo:
+   ```yaml
+   apiVersion: v1
+   kind: Pod
+   metadata:
+     name: my-pod
+   spec:
+     containers:
+     - name: my-container
+       image: nginx:latest
+       ports:
+       - containerPort: 80
+   ```
 
-## ConfigMaps
-- **Listar todos los ConfigMaps en todos los namespaces:**
-  ```bash
-  kubectl get configmaps --all-namespaces
-  ```
-- **Listar todos los ConfigMaps en un namespace específico:**
-  ```bash
-  kubectl get configmaps -n default
-  ```
-- **Ver los detalles de un ConfigMap específico:**
-  ```bash
-  kubectl describe configmap <configmap-name> -n <namespace>
-  ```
+2. **Aplicación del archivo YAML**:
+   Aplica el archivo YAML usando el comando `kubectl apply`:
+   ```sh
+   kubectl apply -f pod.yaml
+   ```
 
-## Secrets
-- **Listar todos los Secrets en todos los namespaces:**
-  ```bash
-  kubectl get secrets --all-namespaces
-  ```
-- **Listar todos los Secrets en un namespace específico:**
-  ```bash
-  kubectl get secrets -n default
-  ```
-- **Ver los detalles de un Secret específico:**
-  ```bash
-  kubectl describe secret <secret-name> -n <namespace>
-  ```
+## Paso 2: Acceso al Pod en Kubernetes
 
-## Namespaces
-- **Listar todos los namespaces:**
-  ```bash
-  kubectl get namespaces
-  ```
-- **Ver los detalles de un namespace específico:**
-  ```bash
-  kubectl describe namespace <namespace-name>
-  ```
-- **Crear un nuevo namespace:**
-  ```bash
-  kubectl create namespace <namespace-name>
-  ```
-- **Eliminar un namespace:**
-  ```bash
-  kubectl delete namespace <namespace-name>
-  ```
+1. **Listado de Pods**:
+   Verifica que el Pod esté en estado `Running`:
+   ```sh
+   kubectl get pods
+   ```
 
-Estos comandos te permiten gestionar y obtener información detallada sobre los diferentes componentes en tu clúster de Kubernetes, lo cual es esencial para la administración efectiva del clúster.
+2. **Acceso al contenedor del Pod**:
+   Accede al contenedor del Pod usando `kubectl exec`:
+   ```sh
+   kubectl exec -it my-pod -- /bin/bash
+   ```
+
+## Paso 3: Modificación del archivo `index.html`
+
+1. **Actualización del sistema de archivos del contenedor**:
+   Antes de editar el archivo `index.html`, actualiza y asegura que Nano esté instalado:
+   ```sh
+   apt-get update
+   apt-get install -y nano
+   ```
+
+2. **Ubicación del archivo `index.html`**:
+   Dentro del contenedor, encuentra la ubicación del archivo `index.html`:
+   ```sh
+   find / -name "index.html"
+   ```
+
+3. **Edición del archivo `index.html`**:
+   Edita el archivo `index.html` según tus necesidades:
+   ```sh
+   nano /usr/share/nginx/html/index.html
+   ```
+
+   Aquí tienes un ejemplo básico de `index.html`:
+   ```html
+   <!DOCTYPE html>
+   <html lang="en">
+   <head>
+   <meta charset="UTF-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <title>Proyecto GIO-JP</title>
+   </head>
+   <body>
+   <h1>Bienvenido a Proyecto GIO-JP</h1>
+   <p>¡Gracias por visitar nuestro sitio! Somos un equipo apasionado comprometido con la excelencia y la innovación en el desarrollo de software.</p>
+   <p>Este es el comienzo de un emocionante viaje tecnológico. Estamos aquí para proporcionar soluciones creativas y eficientes para tus necesidades.</p>
+   <p>No dudes en ponerte en contacto con nosotros si necesitas ayuda o más información.</p>
+   <p><em>¡Gracias por ser parte de nuestro proyecto!</em></p>
+   </body>
+   </html>
+   ```
+
+4. **Verificación de los cambios**:
+   Verifica los cambios accediendo al servicio Nginx a través de tu navegador o usando `curl`.
+
+## Paso 4: Verificación de los cambios utilizando kubectl port-forward
+
+1. **Ejecución de kubectl port-forward**:
+   Para ver los cambios en el archivo `index.html` en tu navegador local, ejecuta el siguiente comando para reenviar el puerto del contenedor al puerto local:
+   ```sh
+   kubectl port-forward my-pod 80:80
+   ```
+
+2. **Acceso al sitio web**:
+   Abre tu navegador web y accede a `http://localhost:80` para ver los cambios reflejados en el archivo `index.html` del contenedor.
+
+## Paso 5: 
+
