@@ -220,3 +220,4 @@ kubectl apply -f pod-definition.yaml
 ### Se vuelve a repetir desde el PASO 2
 
 
+
